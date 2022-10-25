@@ -34,7 +34,7 @@ services:
     container_name: "snomed2neo_py"
     volumes:
       - ./code:/app
-      - ./snomed+icd_vocab:/snomed+icd_vocab
+      - ./vocabularies:/vocabularies
       - ./mimic-preprocessed:/mimic-preprocessed
     stdin_open: true # docker run -i
     ports:

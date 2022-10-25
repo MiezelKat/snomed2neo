@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker-compose build
+
 # start docker compose
 docker-compose up -d
 
@@ -9,16 +11,15 @@ neo4j_host_name="localhost"
 echo "neo4j host: $neo4j_host_name"
 
 status_code=$(curl --write-out %{http_code} --silent --output /dev/null $neo4j_host_name:7474)
-echo "Site status changed to $status_code"
+echo "Waiting for Neo4J to start (status $status_code)"
 
 while (( $status_code < 200 )) || (( $status_code >= 300 )) ;
 do
-    sleep 3
+    sleep 5
     status_code=$(curl --write-out %{http_code} --silent --output /dev/null $neo4j_host_name:7474)
-    echo "Site status changed to $status_code"
+    echo "Still waiting for Neo4J to start (status $status_code)"
 done
+echo "Neo4j started up. Writing data now..."
 
-docker exec -it snomed2neo_py jupyter lab --port 8888 --ip 0.0.0.0 --allow-root
-
-# echo "starting py script"
-# docker exec -it py_experiment python main.py 
+# start the script
+docker exec -it snomed2neo_py python /app/write_snomed_icd9.py
